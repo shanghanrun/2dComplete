@@ -7,6 +7,12 @@ public class Player : MonoBehaviour
 {
     Rigidbody2D rb;
     Animator animator; 
+    CapsuleCollider2D cc;
+
+    [Header("Death")]
+    [SerializeField] GameObject playerDeathVfx;
+
+    bool canBeControlled = false;
 
     [Header("Movement")]
     public float moveSpeed = 5f;
@@ -17,6 +23,7 @@ public class Player : MonoBehaviour
     float yInput;
     bool facingRight = true;
     public int facingDirection = 1;
+    float defaultGravityScale;
 
     [Header("Buffer Jump, Coyote Jump")]
     public float jumpBufferTime = .3f;
@@ -34,7 +41,7 @@ public class Player : MonoBehaviour
     public float knockbackDuration =1;
     public Vector2 knockbackPower;
     bool isKnocked;
-    bool canBeKnocked;
+    // bool canBeKnocked;
 
     
     [Header("Collision Info")]
@@ -45,16 +52,24 @@ public class Player : MonoBehaviour
     public float wallCheckDistance;
     public LayerMask whatIsGround;
 
+    bool isPassive = false;
+
     void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();        
+        cc = GetComponent<CapsuleCollider2D>();
         animator = GetComponentInChildren<Animator>();
     }
+    void Start(){
+        defaultGravityScale = rb.gravityScale;
+        RespawnFinished(false);
+    }
 
-    // Update is called once per frame
     void Update()
     {     
-        UpdateAirborneState();       
+        UpdateAirborneState();   
+
+        if(!canBeControlled) return;    
 
         if (isKnocked) return;
 
@@ -69,21 +84,44 @@ public class Player : MonoBehaviour
         DecreaseJumpBufferCounter();
     }
 
-    public void Knockback(){
+    public void RespawnFinished(bool finished){
+
+        if(finished){
+            rb.gravityScale = defaultGravityScale;
+            canBeControlled = true;
+            cc.enabled = true;
+        }
+        else{
+            rb.gravityScale =0;
+            canBeControlled = false;
+            cc.enabled = false;
+        }
+    }
+
+    public void Knockback(float damageSourceXPos){
+        float knockbackDir =1;
+        if(transform.position.x < damageSourceXPos){
+            knockbackDir = -1;
+        } 
+
         if(isKnocked) return;
         
         StartCoroutine(KnockbackRoutine());
-        animator.SetTrigger("knockback");
-        rb.velocity = new Vector2(knockbackPower.x * -facingDirection, knockbackPower.y);
+        rb.velocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
     }
     IEnumerator KnockbackRoutine()
     {
-        canBeKnocked = false;
+        // canBeKnocked = false;
         isKnocked = true;
+        animator.SetTrigger("knockback");
         yield return new WaitForSeconds(knockbackDuration);
-        canBeKnocked = true;
+        // canBeKnocked = true;
         isKnocked = false;
-    }    
+    }
+    public void Die() {        
+        GameObject newFx = Instantiate(playerDeathVfx, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+    }
 
     void UpdateAirborneState(){
         if (isAirborne && isGrounded)
@@ -182,8 +220,12 @@ public class Player : MonoBehaviour
     void HandleMovement(){
         if(isWalled) return;
         if(isWallJumping) return; // wallJump중에는 아래 코드를 실행하지 않는다.
+        if(isPassive) return;
 
         rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y); 
+    }
+    public void SetPassive(bool value){
+        isPassive = value;
     }
 
     void HandleCollision()
