@@ -12,5 +12,8 @@ public class DeadZone : MonoBehaviour
            
             GameManager.instance.RespawnPlayer();
         }
+        if(other.gameObject.CompareTag("Enemy")){
+            Destroy(other.gameObject, 2);
+        }
     }
 }

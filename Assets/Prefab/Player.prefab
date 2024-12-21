@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 3600774474364751096}
   - component: {fileID: 3297562589114788871}
   - component: {fileID: 3432057575206224868}
-  m_Layer: 0
+  - component: {fileID: 1544728449762563240}
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -110,6 +111,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa47ae7317dc540499ce788cc1ee8842, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animators:
+  - {fileID: 22100000, guid: 873f2db275fbb6140b0786a9a5ce8205, type: 2}
+  - {fileID: 22100000, guid: 8449ec6f516a8944bbff7ee297f6666b, type: 2}
+  - {fileID: 22100000, guid: fbf0d843ca6bb4b46823623e6cd79089, type: 2}
+  - {fileID: 22100000, guid: 7b6ec95333d2c9640b0025dc5a2dc468, type: 2}
   playerDeathVfx: {fileID: 941002696329637710, guid: a633d042b649101439059b5ecb9b7144, type: 3}
   moveSpeed: 8
   jumpForce: 14
@@ -143,6 +149,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd7a1299bf6c51b45b3f35f46bf84072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!58 &1544728449762563240
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102404580445841312}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.6}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &7596103785390776380
 GameObject:
   m_ObjectHideFlags: 0

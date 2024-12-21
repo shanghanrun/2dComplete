@@ -9,8 +9,10 @@ public class Player : MonoBehaviour
     Animator animator; 
     CapsuleCollider2D cc;
 
-    [Header("Death")]
+    [Header("Visuals")]
+    [SerializeField] AnimatorOverrideController[] animators;
     [SerializeField] GameObject playerDeathVfx;
+    int skinIndex;
 
     bool canBeControlled = false;
 
@@ -63,6 +65,7 @@ public class Player : MonoBehaviour
     void Start(){
         defaultGravityScale = rb.gravityScale;
         RespawnFinished(false);
+        UpdateSkin();
     }
 
     void Update()
@@ -84,6 +87,14 @@ public class Player : MonoBehaviour
         DecreaseJumpBufferCounter();
     }
 
+    public void UpdateSkin(){
+        SkinManager skinManager = SkinManager.instance;
+        
+        if(skinManager == null) return;
+
+        animator.runtimeAnimatorController = animators[skinManager.chosenSkinId];
+    }
+
     public void RespawnFinished(bool finished){
 
         if(finished){
@@ -96,6 +107,9 @@ public class Player : MonoBehaviour
             canBeControlled = false;
             cc.enabled = false;
         }
+    }
+    public void RespawnFinishedOK(){
+        RespawnFinished(true);
     }
 
     public void Knockback(float damageSourceXPos){
@@ -161,7 +175,7 @@ public class Player : MonoBehaviour
         else if(canDoubleJump) DoubleJump(); // 땅이 아닌 경우(공중) 이때 canDoubleJump이면 점프가능
     }
 
-    void Jump(){
+    public void Jump(){
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
     }
     void DoubleJump()
@@ -226,6 +240,8 @@ public class Player : MonoBehaviour
     }
     public void SetPassive(bool value){
         isPassive = value;
+        //공중에서 점프가능하게 하기 위해
+        isGrounded = true;
     }
 
     void HandleCollision()

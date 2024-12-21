@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Trap
+  - Enemy
+  - EnemyBullet
+  - Ground
+  - DeadZone
   layers:
   - Default
   - TransparentFX
@@ -13,8 +17,8 @@ TagManager:
   - Water
   - UI
   - Player
-  - 
-  - 
+  - Enemy
+  - Trap
   - 
   - 
   - 
