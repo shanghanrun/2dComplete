@@ -6,7 +6,14 @@ using UnityEngine.SceneManagement; // event Action을 사용하기 위해
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager instance;    
+
+    UI_InGame uiInGame;
+
+    [Header("Level Management")]
+    [SerializeField] int currentLevelIndex;
+    int nextLevelIndex;
+    [SerializeField] float levelTimer;
 
     [Header("Player")]
     public GameObject playerPrefab;
@@ -35,14 +42,31 @@ public class GameManager : MonoBehaviour
         }
         else Destroy(gameObject);
         playerTr = playerPrefab.transform; //null이 되지 않게 생성되지 마자 초기화
+        uiInGame = UI_InGame.instance;
     }
     void Start(){
+        currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        if(currentLevelIndex < (SceneManager.sceneCountInBuildSettings - 2)){
+            nextLevelIndex = currentLevelIndex + 1;
+        }
+        else{
+            nextLevelIndex = currentLevelIndex; // 더이상 증가하지 않도록
+        }        
+        
         FruitsInfo();
+    }
+
+    void Update(){
+        levelTimer += Time.deltaTime;
+        uiInGame.UpdateTimerUI(levelTimer);
     }
 
     void FruitsInfo(){
         Fruit[] allFruits = FindObjectsOfType<Fruit>();
         totalFruitsCount = allFruits.Length;
+        uiInGame.UpdateFruitUI(fruitsCollected, totalFruitsCount);
+
+        PlayerPrefs.SetInt("Level" + currentLevelIndex + "TotalFruits", totalFruitsCount);
     }
 
     public void UpdateRespawnPosition(Transform newPoint){
@@ -52,13 +76,22 @@ public class GameManager : MonoBehaviour
     public void RespawnPlayer(){
         StartCoroutine(RespawnRoutine());        
     }
+
     IEnumerator RespawnRoutine(){
         yield return new WaitForSeconds(respawnDelay);
         GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position, Quaternion.identity);
         player = newPlayer.GetComponent<Player>();
     }
 
-    public void AddFruit() => fruitsCollected++;
+    public void AddFruit() {
+        fruitsCollected++;
+        uiInGame.UpdateFruitUI(fruitsCollected, totalFruitsCount);
+    }
+    public void RemoveFruit(){
+        fruitsCollected--;
+        uiInGame.UpdateFruitUI(fruitsCollected, totalFruitsCount);
+    }
+    public int FruitsCollected => fruitsCollected;
 
     public bool DoFruitsNeedRandomLook()=> areFruitsRandom;
 
@@ -73,9 +106,53 @@ public class GameManager : MonoBehaviour
         GameObject newObject = Instantiate(prefab, newPos, Quaternion.identity );
     }
 
-    public void LoadTheEndScene() => SceneManager.LoadScene("TheEnd");
+    void LoadCurrentScene() => SceneManager.LoadScene("Level_" + currentLevelIndex);
+    void LoadTheEndScene() => SceneManager.LoadScene("TheEnd");
+    void LoadNextScene() => SceneManager.LoadScene("Level_" + nextLevelIndex);
+
+    public void RestartLevel()
+    {
+        UI_InGame.instance.fadeEffect.ScreenFade(1, .75f, LoadCurrentScene);
+    }
 
     public void LevelFinished(){
-        UI_InGame.instance.fadeEffect.ScreenFade(1, 1.5f, LoadTheEndScene); // 투명도1은 어둡게 만드는 것.
+        PlayerPrefs.SetInt("Level" + nextLevelIndex +"Unlocked", 1); // "Level2Unlocked" 변수에 1을 넣음.
+        PlayerPrefs.SetInt("ContinueLevelNumber", nextLevelIndex);
+        SaveBestTime();
+        SaveFruitsInfo();
+        
+        UI_FadeEffect fadeEffect = uiInGame.fadeEffect;
+
+        int lastLevelIndex = SceneManager.sceneCountInBuildSettings -2;
+        bool noMoreLevels = currentLevelIndex == lastLevelIndex;
+
+        if(noMoreLevels){
+            fadeEffect.ScreenFade(1, 1.5f, LoadTheEndScene);
+        }
+        else{
+            fadeEffect.ScreenFade(1, 1.5f, LoadNextScene);
+        }
+    }
+
+    void SaveBestTime(){
+        float lastTime = PlayerPrefs.GetFloat("Level" + currentLevelIndex + "BestTime", 99);
+        
+        if(levelTimer < lastTime){
+            PlayerPrefs.SetFloat("Level" + currentLevelIndex + "BestTime", levelTimer);
+        }
+    }
+    
+    void SaveFruitsInfo(){
+        PlayerPrefs.SetInt("Level" + currentLevelIndex + "FruitsCollected", fruitsCollected);
+
+        int fruitsCollectedBefore = PlayerPrefs.GetInt("Level" + currentLevelIndex + "FruitsCollected");
+
+        if(fruitsCollectedBefore < fruitsCollected){ // 나중의 것이 크면 나중것으로
+            PlayerPrefs.SetInt("Level" + currentLevelIndex + "FruitsCollected", fruitsCollected);
+        }
+
+        int totalFruitsInBank = PlayerPrefs.GetInt("TotalFruitsAmount");
+        PlayerPrefs.SetInt("TotalFruitsAmount", totalFruitsInBank + fruitsCollected);
+
     }
 }

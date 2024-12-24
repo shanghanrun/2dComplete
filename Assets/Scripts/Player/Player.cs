@@ -4,7 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
-{
+{    
+    GameManager gameManager;
+    DifficultyManager difficultyManager;
+    DifficultyType gameDifficulty;
+
     Rigidbody2D rb;
     Animator animator; 
     CapsuleCollider2D cc;
@@ -62,11 +66,17 @@ public class Player : MonoBehaviour
         cc = GetComponent<CapsuleCollider2D>();
         animator = GetComponentInChildren<Animator>();
     }
-    void Start(){
+    void Start()
+    {
+        gameManager = GameManager.instance;
+        UpdateGameDifficulty();
+
         defaultGravityScale = rb.gravityScale;
         RespawnFinished(false);
         UpdateSkin();
     }
+
+    
 
     void Update()
     {     
@@ -85,6 +95,31 @@ public class Player : MonoBehaviour
 
         // 버퍼 카운터 감소
         DecreaseJumpBufferCounter();
+    }
+
+    public void Damage(){
+        if(gameDifficulty == DifficultyType.Normal){
+            gameManager.RemoveFruit();
+
+            if(gameManager.FruitsCollected <=0){
+                Die();
+                // restart level
+                gameManager.RestartLevel();
+            } 
+            return;
+        }
+
+        if(gameDifficulty == DifficultyType.Hard){
+            Die();
+            //restart level
+            gameManager.RestartLevel();
+        }
+    }
+
+    void UpdateGameDifficulty()
+    {
+        difficultyManager = DifficultyManager.instance;
+        if (difficultyManager != null) gameDifficulty = difficultyManager.difficulty;
     }
 
     public void UpdateSkin(){
