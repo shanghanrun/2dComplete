@@ -4,7 +4,6 @@ using TMPro;
 using UnityEngine;
 
 [System.Serializable]
-
 public struct Skin{
     public string skinName;
     public int skinPrice;
@@ -13,6 +12,8 @@ public struct Skin{
 
 public class UI_SkinSelection : MonoBehaviour
 {
+    UI_LevelSelection uiLevelSelection;
+    UI_MainMenu uiMainMenu;
     [SerializeField] Skin[] skins;
 
     [Header("UI details")]
@@ -30,6 +31,9 @@ public class UI_SkinSelection : MonoBehaviour
     void Start(){
         LoadSkinUnLocked();
         UpdateSkinDisplay();
+        
+        uiMainMenu = GetComponentInParent<UI_MainMenu>(); //UI_MainMenu는 Canvas에 있다.
+        uiLevelSelection = uiMainMenu.GetComponentInChildren<UI_LevelSelection>(true); // 비활성화되었을때 찾기위해
     }
 
     void LoadSkinUnLocked(){
@@ -87,6 +91,7 @@ public class UI_SkinSelection : MonoBehaviour
         }
         else{
             SkinManager.instance.SetSkinId(currentIndex);
+            uiMainMenu.SwitchUI(uiLevelSelection.gameObject); // GameObject가 들어가야 되므로 클래스의 gameObject로 한다.
         }
 
         UpdateSkinDisplay();

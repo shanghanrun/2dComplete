@@ -44,7 +44,10 @@ public class UI_MainMenu : MonoBehaviour //Canvas에 어태치한다.
     }
 
     public void ContinueGame(){
+        int difficultyIndex = PlayerPrefs.GetInt("GameDifficulty", 1);
         int levelIndex = PlayerPrefs.GetInt("ContinueLevelNumber", 0);
+
+        DifficultyManager.instance.LoadDifficulty(difficultyIndex);
         SceneManager.LoadScene("Level_" + levelIndex);
     }
 }
