@@ -57,7 +57,7 @@ public class EnemyTrunk : Enemy
         else { canMove = true; }
         if (!canMove) return;
 
-        rb.velocity = new Vector2(MoveSpeed * facingDir, rb.velocity.y);
+        rb.linearVelocity = new Vector2(MoveSpeed * facingDir, rb.linearVelocity.y);
     }
 
     void Attack()

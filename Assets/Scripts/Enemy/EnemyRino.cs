@@ -33,7 +33,7 @@ public class EnemyRino : Enemy
 
 		//웅덩이를 만났을 경우
 		if(!isForwardGrounded){
-			rb.velocity = Vector2.zero;
+			rb.linearVelocity = Vector2.zero;
 			Flip();
 			canMove = false;
 			SpeedReset();
@@ -78,7 +78,7 @@ public class EnemyRino : Enemy
 	}
 
 	void BackOff(){
-		rb.velocity = Vector2.zero;
+		rb.linearVelocity = Vector2.zero;
 		rb.AddForce(new Vector2(impactPower.x *(facingDir), impactPower.y), ForceMode2D.Impulse);
 	}
 	
@@ -99,7 +99,7 @@ public class EnemyRino : Enemy
 			currentMoveSpeed = Mathf.Min(currentMoveSpeed, maxSpeed);// 최대속도 제한
 		}
 
-		rb.velocity = new Vector2(currentMoveSpeed * facingDir, rb.velocity.y);
+		rb.linearVelocity = new Vector2(currentMoveSpeed * facingDir, rb.linearVelocity.y);
 	}
 	
 	

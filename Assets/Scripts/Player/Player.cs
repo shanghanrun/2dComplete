@@ -155,8 +155,9 @@ public class Player : MonoBehaviour
 
         if(isKnocked) return;
         
+        CameraManager.instance.ScreenShake(knockbackDir);
         StartCoroutine(KnockbackRoutine());
-        rb.velocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
+        rb.linearVelocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
     }
     IEnumerator KnockbackRoutine()
     {
@@ -211,18 +212,18 @@ public class Player : MonoBehaviour
     }
 
     public void Jump(){
-        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
     void DoubleJump()
     {
-        rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
         canDoubleJump = false; // 더블점프를 했으므로 이제 불가능하게 만든다.
         isWallJumping = false;
     }
     
     void WallJump(){
         canDoubleJump = true; //마치 땅처럼 허용
-        rb.velocity = new Vector2(wallJumpForce.x * -facingDirection, wallJumpForce.y);
+        rb.linearVelocity = new Vector2(wallJumpForce.x * -facingDirection, wallJumpForce.y);
         Flip();
 
         StopAllCoroutines();
@@ -271,7 +272,7 @@ public class Player : MonoBehaviour
         if(isWallJumping) return; // wallJump중에는 아래 코드를 실행하지 않는다.
         if(isPassive) return;
 
-        rb.velocity = new Vector2(xInput * moveSpeed, rb.velocity.y); 
+        rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocity.y); 
     }
     public void SetPassive(bool value){
         isPassive = value;
@@ -287,12 +288,12 @@ public class Player : MonoBehaviour
 
     void HandleWallSlide()
     {
-        bool canWallSlide = isWalled && rb.velocity.y < 0;
+        bool canWallSlide = isWalled && rb.linearVelocity.y < 0;
         float yModifier = yInput < 0 ? 1 : .05f;
 
         if (!canWallSlide) return;
 
-        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * yModifier);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * yModifier);
     }
 
     void HandleFlip(){
@@ -310,8 +311,8 @@ public class Player : MonoBehaviour
 
     void HandleAnimations()
     {
-        animator.SetFloat("xVelocity", rb.velocity.x);
-        animator.SetFloat("yVelocity", rb.velocity.y);
+        animator.SetFloat("xVelocity", rb.linearVelocity.x);
+        animator.SetFloat("yVelocity", rb.linearVelocity.y);
         animator.SetBool("isGrounded", isGrounded);
         animator.SetBool("isWalled", isWalled);
     }

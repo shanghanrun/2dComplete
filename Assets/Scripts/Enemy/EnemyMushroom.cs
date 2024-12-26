@@ -31,7 +31,7 @@ public class EnemyMushroom : Enemy
 
         if (idleTimer > 0) return;
 
-        rb.velocity = new Vector2(MoveSpeed * facingDir, rb.velocity.y);
+        rb.linearVelocity = new Vector2(MoveSpeed * facingDir, rb.linearVelocity.y);
     }
 
     void OnCollisionEnter2D(Collision2D other){

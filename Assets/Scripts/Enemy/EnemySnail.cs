@@ -44,7 +44,7 @@ public class EnemySnail : Enemy
 
         if (idleTimer > 0) return;
 
-        rb.velocity = new Vector2(MoveSpeed * facingDir, rb.velocity.y);
+        rb.linearVelocity = new Vector2(MoveSpeed * facingDir, rb.linearVelocity.y);
     }
 
     void OnCollisionEnter2D(Collision2D other)
@@ -70,7 +70,7 @@ public class EnemySnail : Enemy
         {
             Player player = other.gameObject.GetComponent<Player>();
             Rigidbody2D playerRb = other.gameObject.GetComponent<Rigidbody2D>();
-            if (playerRb.velocity.y < -0.4f)
+            if (playerRb.linearVelocity.y < -0.4f)
             {               
                 Die();
             }
@@ -83,7 +83,7 @@ public class EnemySnail : Enemy
             hasBody = false;
             animator.SetTrigger("Hit");
 
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             idleDuration = 0;
         } 
         else if(!canMove && !hasBody){

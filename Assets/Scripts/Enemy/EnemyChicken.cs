@@ -40,7 +40,7 @@ public class EnemyChicken : Enemy
 
         if(playerDetected && playerTr !=null) HandleFlip(playerTr.transform.position.x);
 
-        rb.velocity = new Vector2(MoveSpeed * facingDir, rb.velocity.y);
+        rb.linearVelocity = new Vector2(MoveSpeed * facingDir, rb.linearVelocity.y);
     }
     protected override void HandleFlip(float xValue)
     {

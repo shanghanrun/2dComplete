@@ -83,7 +83,7 @@ public class Enemy : MonoBehaviour
 
     protected virtual void HandleAnimator()
     {
-        animator.SetFloat("xVelocity", rb.velocity.x);
+        animator.SetFloat("xVelocity", rb.linearVelocity.x);
     }
     protected virtual void HandleMovement(){
         if(idleTimer >0) return;
@@ -130,7 +130,7 @@ public class Enemy : MonoBehaviour
             Player player = other.gameObject.GetComponent<Player>();
             Rigidbody2D playerRb = other.gameObject.GetComponent<Rigidbody2D>();            
 
-            if(playerRb.velocity.y > -0.4) return; //위에서 아래로 내려와야 된다.
+            if(playerRb.linearVelocity.y > -0.4) return; //위에서 아래로 내려와야 된다.
             player.Jump(); 
             Die();
         }
@@ -139,7 +139,7 @@ public class Enemy : MonoBehaviour
     public virtual void Die()
     {
         animator.SetTrigger("Hit");
-        rb.velocity = new Vector2(rb.velocity.x, deathImpact);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, deathImpact);
         DisableColliders();
         isDead = true; // Rotate를 위해
         SetRandomDirection();

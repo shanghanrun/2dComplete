@@ -11,7 +11,7 @@ public class EnemySnailBody : MonoBehaviour
     public void SetupBody(float yVelocity, float zRotate, int facingDir){
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
-        rb.velocity = new Vector2(rb.velocity.x, yVelocity);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, yVelocity);
         
         if(facingDir ==1){
             sr.flipX = true;

@@ -62,7 +62,8 @@ public class GameManager : MonoBehaviour
     }
 
     void FruitsInfo(){
-        Fruit[] allFruits = FindObjectsOfType<Fruit>();
+        // Fruit[] allFruits = FindObjectsOfType<Fruit>(); deprecated
+        Fruit[] allFruits = FindObjectsByType<Fruit>(FindObjectsSortMode.None);
         totalFruitsCount = allFruits.Length;
         uiInGame.UpdateFruitUI(fruitsCollected, totalFruitsCount);
 
@@ -118,6 +119,7 @@ public class GameManager : MonoBehaviour
     public void LevelFinished(){
         PlayerPrefs.SetInt("Level" + nextLevelIndex +"Unlocked", 1); // "Level2Unlocked" 변수에 1을 넣음.
         PlayerPrefs.SetInt("ContinueLevelNumber", nextLevelIndex);
+        PlayerPrefs.SetInt("LastUsedSkin", SkinManager.instance.GetSkinId());
         SaveBestTime();
         SaveFruitsInfo();
         
