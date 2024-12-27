@@ -8,6 +8,7 @@ public class EndPoint : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        AudioManager.instance.PlaySFX(2); // Finish
         Player player = other.GetComponent<Player>(); //이것에 충돌하는 것은 Player밖에 없다.
         if (player != null){
             animator.SetTrigger("Activate");

@@ -53,9 +53,11 @@ public class UI_InGame : MonoBehaviour
         if (pauseUI != null){
             pauseUI.SetActive(false);
         }
+        AudioManager.instance.PlaySFX(4);
     }
     public void MainMenu(){
         SceneManager.LoadScene("MainMenu");
+        AudioManager.instance.PlaySFX(4);
     }
 
     public void UpdateFruitUI(int collectedFruits, int totalFruits){

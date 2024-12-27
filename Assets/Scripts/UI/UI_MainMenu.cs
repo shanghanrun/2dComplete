@@ -37,10 +37,13 @@ public class UI_MainMenu : MonoBehaviour //Canvas에 어태치한다.
         }
 
         uiToEnable.SetActive(true);
+
+        AudioManager.instance.PlaySFX(4);
     }
 
     public void NewGame(){
         fadeEffect.ScreenFade(50, 1.5f, LoadLevelScene);
+        AudioManager.instance.PlaySFX(4);
     }
 
     void LoadLevelScene()=> SceneManager.LoadScene(startSceneName);
@@ -59,6 +62,7 @@ public class UI_MainMenu : MonoBehaviour //Canvas에 어태치한다.
 
         DifficultyManager.instance.LoadDifficulty(difficultyIndex);
         SceneManager.LoadScene("Level_" + levelIndex);
+        AudioManager.instance.PlaySFX(4);
     }
 
     public void MoveCameraToMainMenu(){

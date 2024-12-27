@@ -54,6 +54,8 @@ public class UI_SkinSelection : MonoBehaviour
             currentIndex =0;
         }
         UpdateSkinDisplay();
+
+        AudioManager.instance.PlaySFX(4);
     }
 
     public void PreviousSkin(){
@@ -63,6 +65,7 @@ public class UI_SkinSelection : MonoBehaviour
         }
 
         UpdateSkinDisplay();
+        AudioManager.instance.PlaySFX(4);
     }
 
     void UpdateSkinDisplay(){
@@ -95,6 +98,7 @@ public class UI_SkinSelection : MonoBehaviour
         }
 
         UpdateSkinDisplay();
+        AudioManager.instance.PlaySFX(4);
     }
 
     int FruitsInBank => PlayerPrefs.GetInt("TotalFruitsAmount"); // 읽기 전용 프로퍼티 (get메소드 생략형)  
@@ -103,13 +107,16 @@ public class UI_SkinSelection : MonoBehaviour
     void BuySkin(){
         if(HaveEnoughFruits(skins[currentIndex].skinPrice) == false){
             Debug.Log("Not Enough fruits");
+            AudioManager.instance.PlaySFX(6); // NoMoney
             return;
         }
 
+        AudioManager.instance.PlaySFX(10); // Respawn
         string skinName = skins[currentIndex].skinName;
         skins[currentIndex].unlocked = true;
 
         PlayerPrefs.SetInt(skinName + "Unlocked", 1);
+        AudioManager.instance.PlaySFX(4);
     }
 
     bool HaveEnoughFruits(int price){

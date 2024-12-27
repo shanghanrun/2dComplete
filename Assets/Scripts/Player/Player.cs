@@ -136,8 +136,10 @@ public class Player : MonoBehaviour
             rb.gravityScale = defaultGravityScale;
             canBeControlled = true;
             cc.enabled = true;
+            AudioManager.instance.PlaySFX(10); // Respawn
         }
-        else{
+        else
+        {
             rb.gravityScale =0;
             canBeControlled = false;
             cc.enabled = false;
@@ -154,7 +156,8 @@ public class Player : MonoBehaviour
         } 
 
         if(isKnocked) return;
-        
+
+        AudioManager.instance.PlaySFX(9); // Knocked
         CameraManager.instance.ScreenShake(knockbackDir);
         StartCoroutine(KnockbackRoutine());
         rb.linearVelocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
@@ -168,7 +171,8 @@ public class Player : MonoBehaviour
         // canBeKnocked = true;
         isKnocked = false;
     }
-    public void Die() {        
+    public void Die() {
+        AudioManager.instance.PlaySFX(0); //Death
         GameObject newFx = Instantiate(playerDeathVfx, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
@@ -212,16 +216,19 @@ public class Player : MonoBehaviour
     }
 
     public void Jump(){
+        AudioManager.instance.PlaySFX(3); // Jump
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
     void DoubleJump()
     {
+        AudioManager.instance.PlaySFX(3); // Jump
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
         canDoubleJump = false; // 더블점프를 했으므로 이제 불가능하게 만든다.
         isWallJumping = false;
     }
     
     void WallJump(){
+        AudioManager.instance.PlaySFX(12); // WallJump
         canDoubleJump = true; //마치 땅처럼 허용
         rb.linearVelocity = new Vector2(wallJumpForce.x * -facingDirection, wallJumpForce.y);
         Flip();

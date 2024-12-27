@@ -131,7 +131,8 @@ public class Enemy : MonoBehaviour
             Rigidbody2D playerRb = other.gameObject.GetComponent<Rigidbody2D>();            
 
             if(playerRb.linearVelocity.y > -0.4) return; //위에서 아래로 내려와야 된다.
-            player.Jump(); 
+            player.Jump();
+            AudioManager.instance.PlaySFX(1); // EnemyKicked
             Die();
         }
     }

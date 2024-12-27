@@ -35,6 +35,7 @@ public class Fruit : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other){
         if(other.gameObject.CompareTag("Player")){
             gameManager.AddFruit();
+            AudioManager.instance.PlaySFX(7); //Pickup
             Destroy(gameObject);
 
             GameObject newFx = Instantiate(pickupVfx, transform.position, Quaternion.identity);

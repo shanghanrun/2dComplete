@@ -13,6 +13,7 @@ public class DeadTr : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other){
         if(other.CompareTag("Player")){
+            AudioManager.instance.PlaySFX(1); // EnemyKicked
             Die();
             
         }
