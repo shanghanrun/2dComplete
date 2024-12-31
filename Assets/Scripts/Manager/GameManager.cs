@@ -15,38 +15,35 @@ public class GameManager : MonoBehaviour
     int nextLevelIndex;
     [SerializeField] float levelTimer;
 
-    [Header("Player")]
-    public GameObject playerPrefab;
-    public Transform respawnPoint; //참조형
-    public float respawnDelay = 1f;
-    public Player player;
-    Transform playerTr;
+   
 
     [Header("Fruits ManageMent")]
     public bool areFruitsRandom;
     public int fruitsCollected;
     public int totalFruitsCount;
-    // public Fruit[] allFruits;
+    public Transform fruitParentTr;
 
     [Header("Checkpoint")]
     public Transform checkPoint;
     public bool canBeReActivated = true; //최근에 방문한 체크포인트를 respawn 포인트로 할지 여부
 
-    [Header("Traps")]
-    public GameObject arrowPrefab;
-    public float delay = 1f;
+    
 
     [Header("Managers")]
-    [SerializeField] AudioManager audioManager; // 프리팹에서 넣어준다.
+    [SerializeField] AudioManager audioManagerPrefab; // 프리팹에서 넣어준다.
+    [SerializeField] PlayerManager playerManagerPrefab; // 혹시라도 PlayerManager가 없으면 안되니 체크하도록
+    [SerializeField] SkinManager skinManagerPrefab;
+    [SerializeField] DifficultyManager difficultyManagerPrefab;
+    [SerializeField] ObjectCreator objectCreatorPrefab;
 
     void Awake(){
         if(instance == null){
             instance = this;
         }
         else Destroy(gameObject);
-        playerTr = playerPrefab.transform; //null이 되지 않게 생성되지 마자 초기화
-        // uiInGame = UI_InGame.instance;
+        CreateManagerIfNeeded();
     }
+
     void Start(){
         uiInGame = UI_InGame.instance; // uiInGame인스턴스가 스스로의 Awake에서 생성된 이후에 찾기
         currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
@@ -56,19 +53,13 @@ public class GameManager : MonoBehaviour
         else{
             nextLevelIndex = currentLevelIndex; // 더이상 증가하지 않도록
         }
-
-        if(respawnPoint == null){
-            respawnPoint = FindFirstObjectByType<StartPoint>()?.transform;
-        }        
+       
         if(checkPoint == null){
             checkPoint = FindFirstObjectByType<Checkpoint>()?.transform;
-        }        
-        if(player == null){
-            player = FindFirstObjectByType<Player>();
-        }        
+        }       
         
         FruitsInfo();
-        CreateManagerIfNeeded();
+        // CreateManagerIfNeeded();
     }
 
     private object FindObjectByType<T>()
@@ -83,7 +74,19 @@ public class GameManager : MonoBehaviour
 
     void CreateManagerIfNeeded(){
         if(AudioManager.instance == null){
-            Instantiate(audioManager);
+            Instantiate(audioManagerPrefab);
+        }
+        if(PlayerManager.instance == null){
+            Instantiate(playerManagerPrefab);
+        }
+        if(SkinManager.instance == null){
+            Instantiate(skinManagerPrefab);
+        }
+        if(DifficultyManager.instance == null){
+            Instantiate(difficultyManagerPrefab);
+        }
+        if(ObjectCreator.instance == null){
+            Instantiate(objectCreatorPrefab);
         }
     }
 
@@ -96,19 +99,20 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("Level" + currentLevelIndex + "TotalFruits", totalFruitsCount);
     }
 
-    public void UpdateRespawnPosition(Transform newPoint){
-        respawnPoint = newPoint;
-    }
+    [ContextMenu("Parent Of All Fruits")]
+    void ParentOfAllFruits(){
+        if(fruitParentTr == null){
+            return;
+        }
 
-    public void RespawnPlayer(){
-        StartCoroutine(RespawnRoutine());        
-    }
+        Fruit[] allFruits = FindObjectsByType<Fruit>(FindObjectsSortMode.None);
 
-    IEnumerator RespawnRoutine(){
-        yield return new WaitForSeconds(respawnDelay);
-        GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position, Quaternion.identity);
-        player = newPlayer.GetComponent<Player>();
+        foreach(Fruit fruit in allFruits){
+            // fruit.transform.parent = fruitParentTr; // 아래 방식이 더 직관적이다.
+            fruit.transform.SetParent(fruitParentTr);
+        }
     }
+    
 
     public void AddFruit() {
         fruitsCollected++;
@@ -122,16 +126,7 @@ public class GameManager : MonoBehaviour
 
     public bool DoFruitsNeedRandomLook()=> areFruitsRandom;
 
-    public void CreateObject(GameObject prefab, Transform target){
-        StartCoroutine(CreateObjectRoutine(prefab, target));
-    }
-
-    IEnumerator CreateObjectRoutine(GameObject prefab, Transform target){
-        Vector3 newPos = target.position;
-        yield return new WaitForSeconds(delay);
-        
-        GameObject newObject = Instantiate(prefab, newPos, Quaternion.identity );
-    }
+    
 
     void LoadCurrentScene() => SceneManager.LoadScene("Level_" + currentLevelIndex);
     void LoadTheEndScene() => SceneManager.LoadScene("TheEnd");

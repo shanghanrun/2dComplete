@@ -90,9 +90,12 @@ public class Trap_FallingPlatform : MonoBehaviour
     void SwitchOffPlatform(){
         canMove = false; // HandleMovement의 위치조정을 하지 않게 해서, 더디게 떨어지는 것 방지
         animator.SetTrigger("Deactivate");
-        rb.isKinematic = false;
+        // rb.isKinematic = false; 이것 deprecated
+        rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 3.5f;
-        rb.linearDamping = .5f;
+        // rb.drag = .5f; 이것 deprecated
+        rb.linearDamping = .5f; 
+        
 
         foreach( BoxCollider2D coll in colls){
             coll.enabled = false;

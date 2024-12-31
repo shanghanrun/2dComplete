@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
 {    
     GameManager gameManager;
     DifficultyManager difficultyManager;
-    DifficultyType gameDifficulty;
+    [SerializeField] DifficultyType gameDifficulty;
 
     Rigidbody2D rb;
     Animator animator; 
@@ -17,13 +17,14 @@ public class Player : MonoBehaviour
     [SerializeField] AnimatorOverrideController[] animators;
     [SerializeField] GameObject playerDeathVfx;
     int skinIndex;
+    [SerializeField] ParticleSystem dustFx;
 
     bool canBeControlled = false;
 
     [Header("Movement")]
     public float moveSpeed = 5f;
-    public float jumpForce;
-    public float doubleJumpForce;
+    public float jumpForce =16;
+    public float doubleJumpForce = 18;
     public bool canDoubleJump;
     float xInput;
     float yInput;
@@ -60,6 +61,9 @@ public class Player : MonoBehaviour
 
     bool isPassive = false;
 
+    [Header("Player Fruit Drop")]
+    [SerializeField] GameObject fruitDropPrefab;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();        
@@ -74,6 +78,7 @@ public class Player : MonoBehaviour
         defaultGravityScale = rb.gravityScale;
         RespawnFinished(false);
         UpdateSkin();
+        // Debug.Log(gameDifficulty);
     }
 
     
@@ -98,14 +103,17 @@ public class Player : MonoBehaviour
     }
 
     public void Damage(){
-        if(gameDifficulty == DifficultyType.Normal){
-            gameManager.RemoveFruit();
+        if(gameDifficulty == DifficultyType.Normal){     
 
             if(gameManager.FruitsCollected <=0){
                 Die();
                 // restart level
                 gameManager.RestartLevel();
-            } 
+            }
+            else{
+                ObjectCreator.instance.CreateObject(fruitDropPrefab, transform, true);
+                gameManager.RemoveFruit();
+            }
             return;
         }
 
@@ -115,7 +123,7 @@ public class Player : MonoBehaviour
             gameManager.RestartLevel();
         }
     }
-
+    
     void UpdateGameDifficulty()
     {
         difficultyManager = DifficultyManager.instance;
@@ -186,6 +194,8 @@ public class Player : MonoBehaviour
             BecomeAirborne();
     }
     void HandleLanding(){
+        dustFx.Play();
+
         isAirborne = false; //땅이라서 isAirborne을 false로 만들고
         canDoubleJump = true; // 땅에 닿은 상태라면 doubleJump를 할 수 있게 만든다.
 
@@ -216,11 +226,13 @@ public class Player : MonoBehaviour
     }
 
     public void Jump(){
+        // dustFx.Play();
         AudioManager.instance.PlaySFX(3); // Jump
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
     void DoubleJump()
     {
+        dustFx.Play();
         AudioManager.instance.PlaySFX(3); // Jump
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
         canDoubleJump = false; // 더블점프를 했으므로 이제 불가능하게 만든다.
@@ -228,6 +240,7 @@ public class Player : MonoBehaviour
     }
     
     void WallJump(){
+        // dustFx.Play();
         AudioManager.instance.PlaySFX(12); // WallJump
         canDoubleJump = true; //마치 땅처럼 허용
         rb.linearVelocity = new Vector2(wallJumpForce.x * -facingDirection, wallJumpForce.y);
@@ -297,8 +310,11 @@ public class Player : MonoBehaviour
     {
         bool canWallSlide = isWalled && rb.linearVelocity.y < 0;
         float yModifier = yInput < 0 ? 1 : .05f;
+        
 
         if (!canWallSlide) return;
+
+        dustFx.Play();
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * yModifier);
     }

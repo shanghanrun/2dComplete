@@ -58,10 +58,24 @@ public class Enemy : MonoBehaviour
     }
 
     protected virtual void Start(){
+        InvokeRepeating(nameof(UpdatePlayerRef), 0,1);
         if(flipDefaultFacingDirection){
             if(!facingRight){ // 기본은 좌측을 바라보고 있다.(-1)
                 Flip();
             }
+        }
+
+        PlayerManager.OnPlayerRespawn += UpdateNullPlayerRef; //메소드(함수)이름만 넣어주면 된다.(subscribe)
+    }
+    void UpdatePlayerRef(){  //가장 최근의 player의 Transform 위치를 얻기
+        if(playerTr !=null){
+            playerTr = PlayerManager.instance.player.transform;
+        }
+    }
+
+    void UpdateNullPlayerRef(){ // 플레이어가 사라져서 playerTr이 없을 경우 플레이어 Transform 위치얻기
+        if(playerTr == null){
+            playerTr = PlayerManager.instance.player.transform;
         }
     }
     
@@ -139,11 +153,17 @@ public class Enemy : MonoBehaviour
 
     public virtual void Die()
     {
+        if(rb.bodyType == RigidbodyType2D.Kinematic){
+            rb.bodyType = RigidbodyType2D.Dynamic;
+        }
+
         animator.SetTrigger("Hit");
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, deathImpact);
         DisableColliders();
         isDead = true; // Rotate를 위해
         SetRandomDirection();
+
+        PlayerManager.OnPlayerRespawn -= UpdatePlayerRef; // unsubscribe
         Destroy(gameObject, 1f);
     }
 

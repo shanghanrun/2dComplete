@@ -10,13 +10,15 @@ public class Fruit : MonoBehaviour
     [SerializeField] private GameObject pickupVfx; // pickupVfsPrefab
 
     private GameManager gameManager;
-    private Animator animator;
+    protected Animator animator; // 공유하기 위해 protected로
+    protected SpriteRenderer sr;
 
     void Awake(){
        animator = gameObject.GetComponentInChildren<Animator>();
+       sr = GetComponentInChildren<SpriteRenderer>(); // 사실 gameObject는 생략해도 된다.
     }
 
-    void Start(){
+    protected virtual void Start(){
        gameManager = GameManager.instance; 
        SetRandomLook();
     }
@@ -32,7 +34,7 @@ public class Fruit : MonoBehaviour
     }
     void UpdateFruitVisuals() => animator.SetFloat("fruitIndex", (int)fruitType);
 
-    void OnTriggerEnter2D(Collider2D other){
+    protected virtual void OnTriggerEnter2D(Collider2D other){
         if(other.gameObject.CompareTag("Player")){
             gameManager.AddFruit();
             AudioManager.instance.PlaySFX(7); //Pickup

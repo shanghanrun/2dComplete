@@ -44,17 +44,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5fd73901518ce4c9e0eed4305e5d64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiInGame: {fileID: 0}
   currentLevelIndex: 0
   levelTimer: 0
-  playerPrefab: {fileID: 1102404580445841312, guid: 872045f54fb0ba645a7bae395049fe5d, type: 3}
-  respawnPoint: {fileID: 0}
-  respawnDelay: 1
-  player: {fileID: 0}
   areFruitsRandom: 0
   fruitsCollected: 0
   totalFruitsCount: 0
-  checkpoint: {fileID: 0}
+  fruitParentTr: {fileID: 0}
+  checkPoint: {fileID: 0}
   canBeReActivated: 1
-  arrowPrefab: {fileID: 3112783041192671951, guid: bc7c508c225d3864aa9a80ac35b147d1, type: 3}
-  delay: 1
-  audioManager: {fileID: 2813740594563510401, guid: e895875ee73ba944fbc0a81373e06a5b, type: 3}
+  audioManagerPrefab: {fileID: 2813740594563510401, guid: e895875ee73ba944fbc0a81373e06a5b, type: 3}
+  playerManagerPrefab: {fileID: 3518371002463967939, guid: 074abb84cc21ec843b69059e9fbba8dc, type: 3}
+  skinManagerPrefab: {fileID: 206589126780822669, guid: aca3b5587dbc46c43a141e9313cb4890, type: 3}
+  difficultyManagerPrefab: {fileID: 7121642349551762248, guid: 815e93b0c30122b48b4e7e62351fa105, type: 3}
+  objectCreatorPrefab: {fileID: 6943717177659954022, guid: ec168455b74b88b4eb86a39410f2b3c8, type: 3}

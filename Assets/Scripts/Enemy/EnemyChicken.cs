@@ -68,9 +68,9 @@ public class EnemyChicken : Enemy
 
     void DetectPlayer(){
         //재생된 플레이어의 playerTr null 방지
-        if (playerTr == null){
-            playerTr = GameManager.instance.player.transform;
-        }
+        // if (playerTr == null){
+        //     playerTr = PlayerManager.instance.player.transform;
+        // }
 
         // RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right *facingDir, playerDetectRange, whatIsPlayer);
         // playerDetected = hit.collider !=null;

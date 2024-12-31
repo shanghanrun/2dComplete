@@ -36,8 +36,8 @@ public class Trap_Arrow : Trap_Trampoline
         if(isDestroyed) return;
         isDestroyed = true;
 
-        GameObject newObject = GameManager.instance.arrowPrefab;
-        GameManager.instance.CreateObject(newObject, transform);
+        GameObject newObject = ObjectCreator.instance.arrowPrefab;
+        ObjectCreator.instance.CreateObject(newObject, transform);
         Destroy(gameObject, 0.3f); // 에니메이션 이벤트에서 사용
     }
 }

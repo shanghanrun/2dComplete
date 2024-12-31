@@ -1,6 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class EnemyRino : Enemy
 {
@@ -14,10 +14,16 @@ public class EnemyRino : Enemy
 	bool canDetect = true;
 	public bool callFromChild = false;
 
+	[Header("Effects")]
+	[SerializeField] ParticleSystem dustFx;
+	[SerializeField] CinemachineImpulseSource impulseSource;
+	[SerializeField] Vector2 cameraImpulseDir = new Vector2(0.6f,0.6f);
+
 	protected override void Start(){
 		base.Start();
 		MoveSpeed = rinoSpeed;
 		currentMoveSpeed = MoveSpeed;
+		impulseSource = GetComponent<CinemachineImpulseSource>(); // EnemyRino오브젝트의 컴포넌트
 	}
 
 	protected override void Update()
@@ -27,7 +33,7 @@ public class EnemyRino : Enemy
 		DetectPlayer();
 	}
 	
-	protected override void HandleCollision() //움직이는 enemy에서 사용한다.
+	protected override void HandleCollision() //Rino, Mushroom처럼 움직이는 enemy에서 사용한다.
 	{
 		base.HandleCollision();
 
@@ -39,8 +45,10 @@ public class EnemyRino : Enemy
 			SpeedReset();
 		} 
 
+		//벽에 부딪쳤을 경우
 		if(isWalled) {
 			animator.SetTrigger("HitWall");
+			HitWallImpact();
 			
 			BackOff();
 			//잠시 못 움직이게 설정. 그런데 어차피 canMove false해야 된다.
@@ -89,11 +97,14 @@ public class EnemyRino : Enemy
 
 		// 플레이어를 발견하고 달리다가, 플레이어가 사라지더라도, 벽을 충돌해야 된다.
 		if (!playerDetected)
-		{			
+		{						
 			SpeedReset();
 			if(!isWalled){
 				canMove = true;	
-			} else canMove = false;
+			} else {
+				canMove = false;
+				HitWallImpact();
+			}
 		} else{ //플레이어 탐지시 속도증가
 			currentMoveSpeed += speedIncreaseRate *Time.deltaTime;
 			currentMoveSpeed = Mathf.Min(currentMoveSpeed, maxSpeed);// 최대속도 제한
@@ -108,7 +119,7 @@ public class EnemyRino : Enemy
 		//재생된 플레이어의 playerTr null 방지
 		if (playerTr == null)
 		{
-			var playerInstance = GameManager.instance.player;
+			var playerInstance = PlayerManager.instance.player;
 			if(playerInstance !=null){
 				playerTr = playerInstance.transform;
 			}
@@ -145,4 +156,10 @@ public class EnemyRino : Enemy
 
 		callFromChild = false; // 플래그 초기화
     }
+
+	void HitWallImpact(){
+		dustFx.Play();
+		impulseSource.DefaultVelocity = new Vector2(cameraImpulseDir.x * facingDir, cameraImpulseDir.y);
+		impulseSource.GenerateImpulse();
+	}
 }
